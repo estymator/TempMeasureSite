@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue'
+
+let currentTemp = new FileReader;
 </script>
 
 <template>
-  <header>
-    Teemat
-    </header>
+   <div id="tempInfo">
+    Aktualna temperatura: 
+   </div>
 </template>
