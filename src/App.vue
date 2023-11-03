@@ -1,28 +1,17 @@
 <script setup lang="ts">
 import {computed} from 'vue';
 import Chart from './components/Chart.vue'
-import axios from 'axios'
 import type {TemperatureData} from './assets/TemperatureData'
+import axios from 'axios';
 
-let tempData = computed(() => {
-   return getTemparatureData()
-})
-
-async function getTemparatureData(): Promise<TemperatureData[]>{
-   try{
-      const tempDataFromPHP = await axios.get('localhost/phpAPI/getTempData.php');
-      console.log(tempDataFromPHP);
-   } catch(error){
-      console.log(error);
-   }
-   let result: Array<TemperatureData> = [];
-   return result;
-}
+let temp
+axios.get('phpAPI/GetTemp.php')
+.then(response => temp = response)
 </script>
 
 <template>
    <div id="tempInfo">
-    Aktualna temperatura: 
+    Aktualna temperatura: temp
    </div>
    <Chart />
 </template>
