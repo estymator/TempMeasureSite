@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs';
+import { hostname } from './AxiosConfig/AxiosConstants';
 import {
   Chart as ChartJS,
   Title,
@@ -10,7 +11,19 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+
+onMounted(() =>
+  axios
+    .get(hostname+'temp.txt')
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+);
 
 ChartJS.register(
   CategoryScale,
