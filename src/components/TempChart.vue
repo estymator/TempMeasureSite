@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs';
-import { hostname } from './AxiosConfig/AxiosConstants';
 import {
   Chart as ChartJS,
   Title,
@@ -11,19 +10,16 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
+import { onMounted, reactive, ref } from 'vue';
+import { TempDTO } from '@/requests/TempDTO';
+import { TempApiImplementation } from '@/requests/TempAPI';
 
-onMounted(() =>
-  axios
-    .get(hostname+'temp.txt')
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-);
+const temperature = reactive(new TempDTO(0, new Date()));
+const temperatureApi: TempApiImplementation = new TempApiImplementation();
+
+onMounted(() => {
+  temperatureApi.getTemp(temperature);
+});
 
 ChartJS.register(
   CategoryScale,
@@ -45,6 +41,7 @@ let chartData = ref({
     },
   ],
 });
+
 let chartOptions: {
   responsive: true;
   maintainAspectRatio: false;
@@ -53,4 +50,5 @@ let chartOptions: {
 
 <template>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
+  <p>Current temp is {{ temperature.temperature }}</p>
 </template>
