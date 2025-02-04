@@ -14,11 +14,12 @@ import { onMounted, reactive, ref } from 'vue';
 import { TempDTO } from '@/requests/TempDTO';
 import { TempApiImplementation } from '@/requests/TempAPI';
 
-const temperature = reactive(new TempDTO(0, new Date()));
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
+const temperaturesState :TempDTO[] = reactive([]);
+
 
 onMounted(() => {
-  temperatureApi.getTemp(temperature);
+  temperatureApi.getTemps(temperaturesState);
 });
 
 ChartJS.register(
@@ -50,5 +51,4 @@ let chartOptions: {
 
 <template>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
-  <p>Current temp is {{ temperature.temperature }}</p>
 </template>
