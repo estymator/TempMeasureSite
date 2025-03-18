@@ -1,3 +1,3 @@
 export class TempDTO {
-  constructor(public temperature: Number, public date: Date) {}
+  constructor(public temperature: number, public date: Date) {}
 }

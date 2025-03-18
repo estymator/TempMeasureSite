@@ -6,14 +6,17 @@ import TempChart from './components/TempChart.vue';
 <template>
   <div id="mainChart">
     <CurrentTemp></CurrentTemp>
-    <TempChart> </TempChart>
+    <TempChart class="mainTempChart"> </TempChart>
   </div>
 </template>
 
-<style>
+<style scoped>
 #mainChart {
-  width: 50%;
+  width: 90%;
   margin-top: 25px;
   margin-left: 25px;
+}
+.mainTempChart {
+  margin-top: 50px;
 }
 </style>

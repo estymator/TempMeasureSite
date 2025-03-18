@@ -14,12 +14,11 @@ export class TempApiImplementation implements TempAPI {
       .get(tempEndpoint)
       .then((response) => {
         let data: String[] = response.data.split('-');
-        temp.temperature = new Number(data[0]);
+        temp.temperature = +data[0];
         temp.date = fetchDateFromString(data[1]);
       })
       .catch((error) => {
         console.log(error);
-        return null;
       });
   }
 
@@ -31,16 +30,11 @@ export class TempApiImplementation implements TempAPI {
         data.split('\n').forEach((tempRow) => {
           let parsedRow: String[] = tempRow.split('-');
           if (parsedRow.length === 2) {
-            console.log(parsedRow);
             temperatures.push(
-              new TempDTO(
-                new Number(parsedRow[0]),
-                fetchDateFromString(parsedRow[1])
-              )
+              new TempDTO(+parsedRow[0], fetchDateFromString(parsedRow[1]))
             );
           }
         });
-        console.log(temperatures.length);
       })
       .catch((error) => {
         console.log(error);
