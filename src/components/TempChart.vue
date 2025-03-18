@@ -10,7 +10,18 @@ import {
   PointElement,
   LineElement,
 } from 'chart.js';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import type { Ref } from 'vue';
+import type { TempDTO } from '@/requests/TempDTO';
+import { TempApiImplementation } from '@/requests/TempAPI';
+
+const temperatureApi: TempApiImplementation = new TempApiImplementation();
+const temperaturesArray: Ref<TempDTO[]> = ref([]);
+const chartTempLabel: string = 'Temperatura';
+
+onMounted(() => {
+  temperatureApi.getTemps(temperaturesArray.value);
+});
 
 ChartJS.register(
   CategoryScale,
@@ -22,16 +33,39 @@ ChartJS.register(
   Legend
 );
 
+watch(
+  temperaturesArray,
+  (newTemps) => {
+    let newLabels: string[] = newTemps.map((temp) =>
+      temp.date.toLocaleString()
+    );
+    let newValues: number[] = newTemps.map((temp) => temp.temperature);
+
+    chartData.value = {
+      labels: newLabels,
+      datasets: [
+        {
+          label: chartTempLabel,
+          backgroundColor: '#f87979',
+          data: newValues,
+        },
+      ],
+    };
+  },
+  { deep: true }
+);
+
 let chartData = ref({
-  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  labels: [] as string[],
   datasets: [
     {
-      label: 'Data One',
+      label: chartTempLabel,
       backgroundColor: '#f87979',
-      data: [40, 39, 10, 40, 39, 80, 40],
+      data: [] as number[],
     },
   ],
 });
+
 let chartOptions: {
   responsive: true;
   maintainAspectRatio: false;
