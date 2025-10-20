@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs';
+import { format } from 'date-fns';
 import {
   Chart as ChartJS,
   Title,
@@ -9,11 +10,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  TimeScale,
 } from 'chart.js';
 import { onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { TempDTO } from '@/requests/TempDTO';
 import { TempApiImplementation } from '@/requests/TempAPI';
+import MainChartFilters from './MainChartFilters.vue';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
 const temperaturesArray: Ref<TempDTO[]> = ref([]);
@@ -24,6 +27,7 @@ onMounted(() => {
 });
 
 ChartJS.register(
+  TimeScale,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -36,10 +40,10 @@ ChartJS.register(
 watch(
   temperaturesArray,
   (newTemps) => {
-    let newLabels: string[] = newTemps.map((temp) =>
-      temp.date.toLocaleString()
+    let newLabels = newTemps.map((temp) =>
+      format(temp.date, 'yyyy-MM-dd HH:mm')
     );
-    let newValues: number[] = newTemps.map((temp) => temp.temperature);
+    let newValues = newTemps.map((temp) => temp.temperature);
 
     chartData.value = {
       labels: newLabels,
@@ -73,5 +77,6 @@ let chartOptions: {
 </script>
 
 <template>
+  <MainChartFilters/>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
