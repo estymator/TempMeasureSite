@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CurrentTemp from './components/CurrentTemp.vue';
-import TempChart from './components/TempChart.vue';
+import TempChart from './components/mainchart/TempChart.vue';
 </script>
 
 <template>
