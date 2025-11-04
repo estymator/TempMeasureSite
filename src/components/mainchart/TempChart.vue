@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Line } from 'vue-chartjs';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import {
   Chart as ChartJS,
   Title,
@@ -18,11 +18,13 @@ import type { TempDTO } from '@/requests/TempDTO';
 import { TempApiImplementation } from '@/requests/TempAPI';
 import MainChartFilters from './MainChartFilters.vue';
 import { ChartFilter } from '@/model/ChartFilter';
+import { filterTempRows } from '@/utils/FilterTempRows';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
 const temperaturesArray: Ref<TempDTO[]> = ref([]);
+const temperaturesChartArray: Ref<TempDTO[]> = ref([]);
 const chartTempLabel: string = 'Temperatura';
-const chartFilter = ref('');
+const chartFilterEvent = ref('');
 
 onMounted(() => {
   temperatureApi.getTemps(temperaturesArray.value);
@@ -39,8 +41,15 @@ ChartJS.register(
   Legend
 );
 
+watch(temperaturesArray,
+  (fetchedTemps) => {
+    temperaturesChartArray.value = fetchedTemps;
+  }, { deep: true }
+)
+
+
 watch(
-  temperaturesArray,
+  temperaturesChartArray,
   (newTemps) => {
     let newLabels = newTemps.map((temp) =>
       format(temp.date, 'yyyy-MM-dd HH:mm')
@@ -62,9 +71,16 @@ watch(
 );
 
 watch(
-  chartFilter,
+  chartFilterEvent,
   (filter) => {
-    console.log(filter);
+    let dates = filter.split('|');
+    let startDate = dates[0];
+    let endDate = dates[1];
+    let newFilter: ChartFilter = {
+      startDate: parseISO(startDate),
+      endDate: parseISO(endDate)
+    }
+    temperaturesChartArray.value=filterTempRows(temperaturesArray.value, newFilter);
   },
   { deep: true }
 );
@@ -87,6 +103,6 @@ let chartOptions: {
 </script>
 
 <template>
-  <MainChartFilters  @filter="(fil) => chartFilter=fil"/>
+  <MainChartFilters @filter-event="(filter) => (chartFilterEvent = filter)" />
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>

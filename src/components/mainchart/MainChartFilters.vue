@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { ChartFilter } from '@/model/ChartFilter';
-import { parseISO } from 'date-fns';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
-const emit = defineEmits(['filter']);
+const emit = defineEmits(['filterEvent']);
 
 const selectedStartDate = ref('');
 const selectedEndDate = ref('');
 
 const emitFilter = () => {
-  emit('filter', selectedStartDate.value + '|' + selectedEndDate.value);
+  emit('filterEvent', selectedStartDate.value + '|' + selectedEndDate.value);
 };
 </script>
 
