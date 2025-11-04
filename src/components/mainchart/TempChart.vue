@@ -17,10 +17,12 @@ import type { Ref } from 'vue';
 import type { TempDTO } from '@/requests/TempDTO';
 import { TempApiImplementation } from '@/requests/TempAPI';
 import MainChartFilters from './MainChartFilters.vue';
+import { ChartFilter } from '@/model/ChartFilter';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
 const temperaturesArray: Ref<TempDTO[]> = ref([]);
 const chartTempLabel: string = 'Temperatura';
+const chartFilter = ref('');
 
 onMounted(() => {
   temperatureApi.getTemps(temperaturesArray.value);
@@ -59,6 +61,14 @@ watch(
   { deep: true }
 );
 
+watch(
+  chartFilter,
+  (filter) => {
+    console.log(filter);
+  },
+  { deep: true }
+);
+
 let chartData = ref({
   labels: [] as string[],
   datasets: [
@@ -77,6 +87,6 @@ let chartOptions: {
 </script>
 
 <template>
-  <MainChartFilters/>
+  <MainChartFilters  @filter="(fil) => chartFilter=fil"/>
   <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
 </template>
