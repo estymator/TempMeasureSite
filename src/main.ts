@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './router';
 
 const app = createApp(App);
-console.log('TEST', import.meta.env);
 app.use(router);
 
 app.mount('#app');
