@@ -13,11 +13,9 @@ export class TempApiImplementation implements TempAPI {
     axios
       .get(tempEndpoint)
       .then((response) => {
-        console.log(response.data)
         let data: String[] = response.data.split('-');
         temp.temperature = +data[0];
         temp.date = fetchDateFromString(data[1]);
-        console.log
       })
       .catch((error) => {
         console.log(error);
