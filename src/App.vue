@@ -6,7 +6,7 @@ import TempChart from './components/mainchart/TempChart.vue';
 <template>
   <div id="mainChart">
     <CurrentTemp></CurrentTemp>
-    <TempChart class="mainTempChart"> </TempChart>
+    <TempChart> </TempChart>
   </div>
 </template>
 
