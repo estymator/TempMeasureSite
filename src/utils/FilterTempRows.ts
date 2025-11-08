@@ -1,5 +1,5 @@
-import { ChartFilter } from '@/model/ChartFilter';
-import { TempDTO } from '@/requests/TempDTO';
+import type { ChartFilter } from '@/model/ChartFilter';
+import type { TempDTO } from '@/requests/TempDTO';
 
 export function filterTempRows(
   tempRows: TempDTO[],

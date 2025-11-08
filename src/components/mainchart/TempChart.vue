@@ -17,7 +17,7 @@ import type { Ref } from 'vue';
 import type { TempDTO } from '@/requests/TempDTO';
 import { TempApiImplementation } from '@/requests/TempAPI';
 import MainChartFilters from './MainChartFilters.vue';
-import { ChartFilter } from '@/model/ChartFilter';
+import type { ChartFilter } from '@/model/ChartFilter';
 import { filterTempRows } from '@/utils/FilterTempRows';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
