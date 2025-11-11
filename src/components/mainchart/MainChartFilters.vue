@@ -12,17 +12,19 @@ const emitFilter = () => {
 </script>
 
 <template>
-  <div>
+  <div style="color: aliceblue">
     <label for="date">Zakres od: </label>
     <input type="date" id="startDate" v-model="selectedStartDate" />
   </div>
 
-  <div>
+  <div style="color: aliceblue">
     <label for="date">Zakres do: </label>
     <input type="date" id="EndDate" v-model="selectedEndDate" />
   </div>
 
   <button @click="emitFilter">Zastosuj</button>
 
-  <p>Wybrany przedział: {{ selectedStartDate }} - {{ selectedEndDate }}</p>
+  <p style="color: aliceblue">
+    Wybrany przedział: {{ selectedStartDate }} - {{ selectedEndDate }}
+  </p>
 </template>
