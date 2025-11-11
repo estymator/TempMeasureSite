@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { TempApiImplementation } from '@/requests/TempAPI';
 import { TempDTO } from '@/requests/TempDTO';
-import { convertDateToString } from '@/utils/DateUtils';
+import { formatISO } from 'date-fns';
 import { onMounted, reactive } from 'vue';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
@@ -15,6 +15,6 @@ onMounted(() => {
 <template>
   <p>
     Najnowsza temperatura: {{ temperature.temperature }}&degC
-    {{ convertDateToString(temperature.date) }}
+    {{ formatISO(temperature.date) }}
   </p>
 </template>
