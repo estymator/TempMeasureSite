@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <p>
+  <p style="color: aliceblue">
     Najnowsza temperatura: {{ temperature.temperature }}&degC
     {{ formatISO(temperature.date) }}
   </p>

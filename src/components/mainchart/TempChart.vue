@@ -19,6 +19,7 @@ import { TempApiImplementation } from '@/requests/TempAPI';
 import MainChartFilters from './MainChartFilters.vue';
 import type { ChartFilter } from '@/model/ChartFilter';
 import { filterTempRows } from '@/utils/FilterTempRows';
+import DataAggregation from './DataAggregation.vue';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
 const temperaturesArray: Ref<TempDTO[]> = ref([]);
@@ -41,12 +42,13 @@ ChartJS.register(
   Legend
 );
 
-watch(temperaturesArray,
+watch(
+  temperaturesArray,
   (fetchedTemps) => {
     temperaturesChartArray.value = fetchedTemps;
-  }, { deep: true }
-)
-
+  },
+  { deep: true }
+);
 
 watch(
   temperaturesChartArray,
@@ -78,9 +80,12 @@ watch(
     let endDate = dates[1];
     let newFilter: ChartFilter = {
       startDate: parseISO(startDate),
-      endDate: parseISO(endDate)
-    }
-    temperaturesChartArray.value=filterTempRows(temperaturesArray.value, newFilter);
+      endDate: parseISO(endDate),
+    };
+    temperaturesChartArray.value = filterTempRows(
+      temperaturesArray.value,
+      newFilter
+    );
   },
   { deep: true }
 );
@@ -103,6 +108,15 @@ let chartOptions: {
 </script>
 
 <template>
-  <MainChartFilters @filter-event="(filter) => (chartFilterEvent = filter)" />
-  <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
+  <div style="display: flex">
+    <div style="width: 70%">
+      <MainChartFilters
+        @filter-event="(filter) => (chartFilterEvent = filter)"
+      />
+      <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
+    </div>
+    <div style="color: aliceblue">
+      <DataAggregation :temperatures="temperaturesChartArray" />
+    </div>
+  </div>
 </template>
