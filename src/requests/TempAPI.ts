@@ -1,17 +1,17 @@
 import axios from 'axios';
 import { TempDTO } from './TempDTO';
-import { tempEndpoint, tempsEndpoint } from '@/requests/AxiosConstants';
+import { getTempEndpoint, getTempsEndpoint } from '@/requests/AxiosConstants';
 import { fetchDateFromString } from '@/utils/DateUtils';
 
 interface TempAPI {
-  getTemp(temp: TempDTO): void;
-  getTemps(temperatures: TempDTO[]): void;
+  getTemp(temp: TempDTO, sensorId: number): void;
+  getTemps(temperatures: TempDTO[], sensorId: number): void;
 }
 
 export class TempApiImplementation implements TempAPI {
-  getTemp(temp: TempDTO): void {
+  getTemp(temp: TempDTO, sensorId: number): void {
     axios
-      .get(tempEndpoint)
+      .get(getTempEndpoint(sensorId))
       .then((response) => {
         let data: String[] = response.data.split('-');
         temp.temperature = +data[0];
@@ -22,9 +22,9 @@ export class TempApiImplementation implements TempAPI {
       });
   }
 
-  getTemps(temperatures: TempDTO[]): void {
+  getTemps(temperatures: TempDTO[], sensorId: number): void {
     axios
-      .get(tempsEndpoint)
+      .get(getTempsEndpoint(sensorId))
       .then((response) => {
         let data: String = response.data;
         data.split('\n').forEach((tempRow) => {
