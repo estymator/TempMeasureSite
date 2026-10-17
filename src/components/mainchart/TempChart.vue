@@ -22,13 +22,21 @@ import { filterTempRows } from '@/utils/FilterTempRows';
 import DataAggregation from './DataAggregation.vue';
 
 const temperatureApi: TempApiImplementation = new TempApiImplementation();
-const temperaturesArray: Ref<TempDTO[]> = ref([]);
+const sensor1Temperatures: Ref<TempDTO[]> = ref([]);
+const sensor2Temperatures: Ref<TempDTO[]> = ref([]);
+const sensor3Temperatures: Ref<TempDTO[]> = ref([]);
 const temperaturesChartArray: Ref<TempDTO[]> = ref([]);
-const chartTempLabel: string = 'Temperatura';
+const filteredSensorTemperatures = ref({
+  sensor1: [] as TempDTO[],
+  sensor2: [] as TempDTO[],
+  sensor3: [] as TempDTO[],
+});
 const chartFilterEvent = ref('');
 
 onMounted(() => {
-  temperatureApi.getTemps(temperaturesArray.value);
+  temperatureApi.getTemps(sensor1Temperatures.value, 1);
+  temperatureApi.getTemps(sensor2Temperatures.value, 2);
+  temperatureApi.getTemps(sensor3Temperatures.value, 3);
 });
 
 ChartJS.register(
@@ -42,61 +50,110 @@ ChartJS.register(
   Legend
 );
 
-watch(
-  temperaturesArray,
-  (fetchedTemps) => {
-    temperaturesChartArray.value = fetchedTemps;
-  },
-  { deep: true }
-);
+const getFilteredTemperatures = (temps: TempDTO[]): TempDTO[] => {
+  if (!chartFilterEvent.value) {
+    return temps;
+  }
 
-watch(
-  temperaturesChartArray,
-  (newTemps) => {
-    let newLabels = newTemps.map((temp) =>
-      format(temp.date, 'yyyy-MM-dd HH:mm')
+  const dates = chartFilterEvent.value.split('|');
+  const startDate = dates[0];
+  const endDate = dates[1];
+  const newFilter: ChartFilter = {
+    startDate: parseISO(startDate),
+    endDate: parseISO(endDate),
+  };
+
+  return filterTempRows(temps, newFilter);
+};
+
+const buildSeriesData = (labels: string[], temps: TempDTO[]) =>
+  labels.map((label) => {
+    const matchingTemp = temps.find(
+      (temp) => format(temp.date, 'yyyy-MM-dd HH:mm') === label
     );
-    let newValues = newTemps.map((temp) => temp.temperature);
+    return matchingTemp ? matchingTemp.temperature : null;
+  });
 
-    chartData.value = {
-      labels: newLabels,
-      datasets: [
-        {
-          label: chartTempLabel,
-          backgroundColor: '#f87979',
-          data: newValues,
-        },
-      ],
-    };
-  },
-  { deep: true }
-);
+const updateChartData = () => {
+  const filteredSensor1 = getFilteredTemperatures(sensor1Temperatures.value);
+  const filteredSensor2 = getFilteredTemperatures(sensor2Temperatures.value);
+  const filteredSensor3 = getFilteredTemperatures(sensor3Temperatures.value);
+
+  filteredSensorTemperatures.value = {
+    sensor1: filteredSensor1,
+    sensor2: filteredSensor2,
+    sensor3: filteredSensor3,
+  };
+
+  temperaturesChartArray.value = [
+    ...filteredSensor1,
+    ...filteredSensor2,
+    ...filteredSensor3,
+  ];
+
+  const allLabels = Array.from(
+    new Set(
+      [
+        ...filteredSensor1.map((temp) => format(temp.date, 'yyyy-MM-dd HH:mm')),
+        ...filteredSensor2.map((temp) => format(temp.date, 'yyyy-MM-dd HH:mm')),
+        ...filteredSensor3.map((temp) => format(temp.date, 'yyyy-MM-dd HH:mm')),
+      ]
+    )
+  ).sort();
+
+  chartData.value = {
+    labels: allLabels,
+    datasets: [
+      {
+        label: 'Czujnik 1',
+        backgroundColor: '#f87979',
+        borderColor: '#f87979',
+        data: buildSeriesData(allLabels, filteredSensor1),
+      },
+      {
+        label: 'Czujnik 2',
+        backgroundColor: '#4cc9f0',
+        borderColor: '#4cc9f0',
+        data: buildSeriesData(allLabels, filteredSensor2),
+      },
+      {
+        label: 'Czujnik 3',
+        backgroundColor: '#90be6d',
+        borderColor: '#90be6d',
+        data: buildSeriesData(allLabels, filteredSensor3),
+      },
+    ],
+  };
+};
 
 watch(
-  chartFilterEvent,
-  (filter) => {
-    let dates = filter.split('|');
-    let startDate = dates[0];
-    let endDate = dates[1];
-    let newFilter: ChartFilter = {
-      startDate: parseISO(startDate),
-      endDate: parseISO(endDate),
-    };
-    temperaturesChartArray.value = filterTempRows(
-      temperaturesArray.value,
-      newFilter
-    );
-  },
+  [sensor1Temperatures, sensor2Temperatures, sensor3Temperatures],
+  () => updateChartData(),
   { deep: true }
 );
+
+watch(chartFilterEvent, () => updateChartData());
 
 let chartData = ref({
   labels: [] as string[],
   datasets: [
     {
-      label: chartTempLabel,
+      label: 'Czujnik 1',
       backgroundColor: '#f87979',
-      data: [] as number[],
+      borderColor: '#f87979',
+      data: [] as Array<number | null>,
+    },
+    {
+      label: 'Czujnik 2',
+      backgroundColor: '#4cc9f0',
+      borderColor: '#4cc9f0',
+      data: [] as Array<number | null>,
+    },
+    {
+      label: 'Czujnik 3',
+      backgroundColor: '#90be6d',
+      borderColor: '#90be6d',
+      data: [] as Array<number | null>,
     },
   ],
 });
@@ -116,7 +173,7 @@ let chartOptions: {
       <Line id="my-chart-id" :options="chartOptions" :data="chartData" />
     </div>
     <div style="color: aliceblue">
-      <DataAggregation :temperatures="temperaturesChartArray" />
+      <DataAggregation :sensor-temperatures="filteredSensorTemperatures" />
     </div>
   </div>
 </template>

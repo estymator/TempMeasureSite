@@ -16,6 +16,18 @@ export default defineConfig(({ mode }) => {
   return {
     base,
     plugins: [vue(), vueJsx()],
+    server: {
+      proxy: {
+        '/temp': {
+          target: 'http://127.0.0.1',
+          changeOrigin: true,
+        },
+        '/temps': {
+          target: 'http://127.0.0.1',
+          changeOrigin: true,
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
